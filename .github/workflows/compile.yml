@@ -43,6 +43,7 @@ jobs:
     - name: Build package
       run: |
         cd "${GITHUB_WORKSPACE}"
+        chown -R builder:builder "${GITHUB_WORKSPACE}"
         sudo -u builder makepkg -s --noconfirm
     
     - name: Upload artifact
