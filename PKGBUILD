@@ -18,11 +18,6 @@ optdepends=('pipewire-alsa: for audio support' 'pulse-native-provider: for audio
 source=("$pkgname-$pkgver::git+https://github.com/TheAenema/godot-jenova.git")
 md5sums=("SKIP")
 
-pkgver() {
-  cd $pkgname-$pkgver
-  git describe --long --tags | sed 's/\([^-]*\)-g/\1.r/' | sed 's/-/./g'
-}
-
 prepare() {
   cd $pkgname-$pkgver
 
