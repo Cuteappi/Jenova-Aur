@@ -9,12 +9,12 @@ on:
     types: [created]
 
 jobs:
-  build:
+  compile:
     runs-on: ubuntu-latest
     container: archlinux:latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Install dependencies
       run: |
@@ -47,14 +47,15 @@ jobs:
     
     - name: Upload artifact
       if: success()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: godot-jenova-package
         path: "*.pkg.tar.zst"
+        retention-days: 30
     
     - name: Create release
       if: github.event_name == 'release' && github.event.action == 'created'
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         files: "*.pkg.tar.zst"
       env:
