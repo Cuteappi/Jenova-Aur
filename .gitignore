@@ -1,0 +1,43 @@
+# Build artifacts
+/pkg/
+/src/
+/*.pkg.tar.zst
+/*.log
+*.pkg.*
+!/.SRCINFO
+
+# Source directory
+godot-jenova-*/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local development
+.env
+*.local
+
+# Build output
+bin/
+obj/
+*.o
+*.a
+*.so
+*.dll
+*.lib
+*.dylib
+
+# Godot specific
+.godot/
+.import/
+*.import
+.mono/
+
+# Compiled files
+*.pck
+*.zip
+*.exe
+*.app
+*.dmg
