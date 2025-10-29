@@ -1,7 +1,7 @@
 # Maintainer: CuteAppi <cuteappis@gmail.com>
-pkgbase='godot-jenova'
-pkgname=('godot-jenova' 'godot-jenova-mono')
-pkgver="4.6.dev1"
+pkgbase=godot-jenova
+pkgname=(godot-jenova godot-jenova-mono)
+pkgver="4.6.dev2"
 pkgrel=1
 # epoch=
 pkgdesc="A 1:1 fork of Godot Engine with added support for Jenova Framework Nested Extensions Hot-Reloading, While basic hot-reloading works on all Godot forks, Nested Extension (NE) support requires a compatible distribution, this repository is the officially supported Godot with Jenova Compatibility, preserving all upstream engine behavior and workflows."
@@ -18,6 +18,11 @@ optdepends=('pipewire-alsa: for audio support' 'pulse-native-provider: for audio
 source=("$pkgname-$pkgver::git+https://github.com/TheAenema/godot-jenova.git")
 md5sums=("SKIP")
 
+pkgver() {
+  cd $pkgname-$pkgver
+  git describe --long --tags | sed 's/\([^-]*\)-g/\1.r/' | sed 's/-/./g'
+}
+
 prepare() {
   cd $pkgname-$pkgver
 
@@ -29,7 +34,7 @@ prepare() {
 
   # Prepare the Godot Jnova desktop file
   cp -f org.godotengine.Godot.desktop org.godotengine.Godot-Jenova.desktop
-  setconf org.godotengine.Godot-Jenova.desktop Exec "env LD_PRELOAD=/usr/lib/libnghttp2.so:/usr/lib/libacl.so:/usr/lib/libssh2.so:/usr/lib/liblz4.so:/usr/lib/libb2.so:/usr/lib/libidn2.so:/usr/lib/libldap.so godot-jenova --display-driver wayland %f"
+  setconf org.godotengine.Godot-Jenova.desktop Exec 'env LD_PRELOAD=/usr/lib/libnghttp2.so:/usr/lib/libacl.so:/usr/lib/libssh2.so:/usr/lib/liblz4.so:/usr/lib/libb2.so:/usr/lib/libidn2.so:/usr/lib/libldap.so godot-jenova --display-driver wayland %f'
   setconf org.godotengine.Godot-Jenova.desktop Icon icon.svg
   setconf org.godotengine.Godot-Jenova.desktop Name 'Godot Engine Jenova'
 
@@ -46,7 +51,7 @@ prepare() {
 
   # Prepare the Godot Jnova Mono desktop file
   cp -f org.godotengine.Godot.desktop org.godotengine.Godot-Jenova-mono.desktop
-  setconf org.godotengine.Godot-Jenova-mono.desktop Exec "env LD_PRELOAD=/usr/lib/libnghttp2.so:/usr/lib/libacl.so:/usr/lib/libssh2.so:/usr/lib/liblz4.so:/usr/lib/libb2.so:/usr/lib/libidn2.so:/usr/lib/libldap.so godot-jenova --display-driver wayland %f"
+  setconf org.godotengine.Godot-Jenova-mono.desktop Exec 'env LD_PRELOAD=/usr/lib/libnghttp2.so:/usr/lib/libacl.so:/usr/lib/libssh2.so:/usr/lib/liblz4.so:/usr/lib/libb2.so:/usr/lib/libidn2.so:/usr/lib/libldap.so godot-jenova-mono --display-driver wayland %f'
   setconf org.godotengine.Godot-Jenova-mono.desktop Icon icon.svg
   setconf org.godotengine.Godot-Jenova-mono.desktop Name 'Godot Engine Jenova Mono'
 
@@ -63,11 +68,21 @@ prepare() {
 build() {
 	cd "$pkgname-$pkgver"
 
+  export BUILD_NAME=arch_linux
+
+  # Not unbundled (yet):
+  #  mbedtls
+  #  enet (contains no upstreamed IPv6 support)
+  #  AUR: libwebm, rvo2
+  #  recastnavigation, xatlas
+
   _args=(
     -j$(nproc --all)
+    # verbose=yes
     cflags="$CFLAGS -fPIC -Wl,-z,relro,-z,now -w"
     cxxflags="$CXXFLAGS -fPIC -Wl,-z,relro,-z,now -w"
     linkflags="$LDFLAGS"
+    extra_libs=atomic
     builtin_brotli=no
     builtin_certs=no
     builtin_clipper2=yes
@@ -105,10 +120,11 @@ build() {
     pulseaudio=yes
     system_certs_path=/etc/ssl/certs/ca-certificates.crt
     target=editor
-    use_llvm=no
+    use_llvm=yes
+    use_static_cpp=no
+    lto=full
     werror=no
   )
-
 
   # Regular build
   scons "${_args[@]}"
@@ -117,9 +133,8 @@ build() {
   _args+=(module_mono_enabled=yes mono_glue=no)
   scons "${_args[@]}"
 
-  bin/godot.linuxbsd.editor.$CARCH.mono --headless --generate-mono-glue modules/mono/glue
+  bin/godot.linuxbsd.editor.$_CARCH.mono --headless --generate-mono-glue modules/mono/glue
   modules/mono/build_scripts/build_assemblies.py --godot-output-dir=./bin --godot-platform=linuxbsd
-
 
 }
 
