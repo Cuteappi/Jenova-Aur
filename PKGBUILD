@@ -59,6 +59,10 @@ prepare() {
 
 }
 
+case $CARCH in
+  x86_64*) _CARCH=x86_64;;
+  aarch64) _CARCH=arm64;;
+esac
 
 build() {
 	cd "$pkgname-$pkgver"
