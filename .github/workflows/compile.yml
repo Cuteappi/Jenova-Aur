@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: |
         pacman -Syu --noconfirm --needed \
-          base-devel git \
+          base-devel git clang \
           alsa-lib brotli ca-certificates embree freetype2 \
           libglvnd libspeechd libsquish libtheora libvorbis \
           libwebp libwslay libxcursor libxi libxinerama \
