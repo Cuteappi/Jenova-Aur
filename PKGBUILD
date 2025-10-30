@@ -121,7 +121,8 @@ build() {
     target=editor
     use_llvm=yes
     use_static_cpp=no
-    lto=full
+    lto=thin
+    linker=mold
     werror=no
   )
 

@@ -23,7 +23,7 @@ jobs:
           alsa-lib brotli ca-certificates embree freetype2 \
           libglvnd libspeechd libsquish libtheora libvorbis \
           libwebp libwslay libxcursor libxi libxinerama \
-          libxrandr miniupnpc openxr pcre2
+          libxrandr miniupnpc openxr pcre2 mold
     
     - name: Install yay AUR helper
       run: |
