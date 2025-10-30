@@ -10,7 +10,7 @@ on:
 
 jobs:
   compile:
-    runs-on: blacksmith-16vcpu-ubuntu-2404
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     container: archlinux:latest
     
     steps:
