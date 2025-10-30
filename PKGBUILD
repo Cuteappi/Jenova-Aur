@@ -64,6 +64,9 @@ case $CARCH in
   aarch64) _CARCH=arm64;;
 esac
 
+# Since we're using LLVM, the binary name will include .llvm.
+_BINARY_SUFFIX=llvm
+
 build() {
 	cd "$pkgname-$pkgver"
 
@@ -121,7 +124,7 @@ build() {
     target=editor
     use_llvm=yes
     use_static_cpp=no
-    lto=thin
+    lto=full
     linker=mold
     werror=no
   )
@@ -133,7 +136,7 @@ build() {
   _args+=(module_mono_enabled=yes mono_glue=no)
   scons "${_args[@]}"
 
-  bin/godot.linuxbsd.editor.$_CARCH.mono --headless --generate-mono-glue modules/mono/glue
+  bin/godot.linuxbsd.editor.$_CARCH.$_BINARY_SUFFIX.mono --headless --generate-mono-glue modules/mono/glue
   modules/mono/build_scripts/build_assemblies.py --godot-output-dir=./bin --godot-platform=linuxbsd
 
 }
@@ -141,7 +144,7 @@ build() {
 package_godot-jenova() {
 	cd "$pkgname-$pkgver"
 
-  install -Dm755 bin/godot.linuxbsd.editor.$CARCH "$pkgdir/usr/bin/godot-jenova"
+  install -Dm755 bin/godot.linuxbsd.editor.$CARCH.$_BINARY_SUFFIX "$pkgdir/usr/bin/godot-jenova"
 
   install -Dm644 icon.svg "$pkgdir/usr/share/pixmaps/$pkgname.svg"
   install -Dm644 misc/dist/linux/org.godotengine.Godot-Jenova.desktop "$pkgdir/usr/share/applications/org.godotengine.Godot-Jenova.desktop"
@@ -157,7 +160,7 @@ package_godot-jenova-mono(){
 
   cd $pkgbase-$pkgver
 
-  install -Dm755 bin/godot.linuxbsd.editor.$CARCH.mono "$pkgdir/usr/lib/$pkgname/godot.linuxbsd.editor.$CARCH.mono"
+  install -Dm755 bin/godot.linuxbsd.editor.$CARCH.$_BINARY_SUFFIX.mono "$pkgdir/usr/lib/$pkgname/godot.linuxbsd.editor.$CARCH.mono"
 
   cp -a bin/GodotSharp "$pkgdir/usr/lib/$pkgname/"
   install -d "$pkgdir/usr/bin"
